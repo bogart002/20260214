@@ -107,7 +107,7 @@
 import { ref, onMounted, onUnmounted, computed } from "vue";
 
 // 恋爱开始时间（请修改为实际日期）
-const loveStartDate = new Date("2020-02-14");
+const loveStartDate = new Date("2020-03-01");
 
 // 时间计算
 const years = ref(0);
