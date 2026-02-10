@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 // 恋爱开始时间（请修改为实际日期）
 const loveStartDate = new Date("2020-03-01");
