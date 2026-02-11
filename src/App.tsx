@@ -40,15 +40,25 @@ export default defineComponent({
       try {
         // 使用配置文件中的图片列表
         if (photoList.length > 0) {
-          photos.value = photoList;
+          // 根据base配置添加前缀
+          const base = '/20260214/';
+          photos.value = photoList.map(path => {
+            // 如果路径已经包含base前缀，直接使用
+            if (path.startsWith(base)) {
+              return path;
+            }
+            // 否则添加base前缀
+            return base + path.replace(/^\//, '');
+          });
         } else {
           // 如果配置为空，使用默认图片
-          photos.value = [defaultPhoto];
+          const base = '/20260214/';
+          photos.value = [defaultPhoto.startsWith(base) ? defaultPhoto : base + defaultPhoto.replace(/^\//, '')];
         }
       } catch (error) {
         console.error("加载照片失败:", error);
         // 如果加载失败，使用默认图片
-        photos.value = [defaultPhoto];
+        photos.value = ['/20260214/vite.svg'];
       }
     };
 
