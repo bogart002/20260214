@@ -137,39 +137,53 @@ const messageIndex = ref(0);
 // 照片列表（自动读取assets/photo文件夹中的所有图片）
 const photos = ref<string[]>([]);
 
-// 动态导入assets/photo文件夹中的所有图片
-const loadPhotos = () => {
+// 从public/photos文件夹动态加载图片
+const loadPhotos = async () => {
   try {
-    // 使用import.meta.glob动态导入所有图片文件
-    const imageModules = import.meta.glob("/src/assets/photo/*", {
-      eager: true,
-      import: "default",
-    });
-    const imagePaths: string[] = [];
-
-    // 遍历所有导入的图片模块，提取图片路径
-    for (const path in imageModules) {
-      if (Object.prototype.hasOwnProperty.call(imageModules, path)) {
-        imagePaths.push(path);
+    // 从public/photos文件夹动态加载图片
+    // 注意：这种方法需要将图片放在public/photos文件夹中
+    const photoExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const photosList = [];
+    
+    // 尝试加载10张图片（可以根据实际情况调整）
+    for (let i = 1; i <= 10; i++) {
+      for (const ext of photoExtensions) {
+        const photoPath = `/photos/photo${i}${ext}`;
+        try {
+          // 尝试加载图片
+          const response = await fetch(photoPath, {
+            method: 'HEAD'
+          });
+          
+          if (response.ok) {
+            photosList.push(photoPath);
+            break;
+          }
+        } catch (error) {
+          // 图片不存在，继续尝试下一个
+          continue;
+        }
       }
     }
-
-    photos.value = imagePaths;
+    
+    // 如果没有找到图片，使用默认图片
+    if (photosList.length === 0) {
+      // 添加默认图片
+      photosList.push('/vite.svg');
+    }
+    
+    photos.value = photosList;
   } catch (error) {
     console.error("加载照片失败:", error);
     // 如果加载失败，使用默认图片
-    photos.value = [
-      "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=romantic%20couple%20holding%20hands%20sunset%20beach%20love&image_size=portrait_4_3",
-      "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=couple%20kissing%20under%20romantic%20lights%20valentine%27s%20day&image_size=portrait_4_3",
-      "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=happy%20couple%20together%20in%20love%20romantic%20moment&image_size=portrait_4_3",
-    ];
+    photos.value = ['/vite.svg'];
   }
 };
 
 // 加载照片
-loadPhotos();
+await loadPhotos();
 
-// 注意：请将照片文件放在 src/assets/photo/ 文件夹中，支持任意文件名
+// 注意：请将照片文件放在 public/photos/ 文件夹中，支持任意文件名，命名格式为photo1.jpg, photo2.png等
 
 // 礼物状态
 const giftOpened = ref(false);
