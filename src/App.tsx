@@ -1,4 +1,5 @@
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
+import { photoList, defaultPhoto } from './photoConfig';
 
 export default defineComponent({
   name: 'ValentinePage',
@@ -31,49 +32,23 @@ export default defineComponent({
     const currentMessage = ref(loveMessages[0]);
     const messageIndex = ref(0);
 
-    // 照片列表（自动读取assets/photo文件夹中的所有图片）
+    // 照片列表（从配置文件读取）
     const photos = ref<string[]>([]);
 
-    // 从public/photos文件夹动态加载图片
-    const loadPhotos = async () => {
+    // 从配置文件加载图片
+    const loadPhotos = () => {
       try {
-        // 从public/photos文件夹动态加载图片
-        // 注意：这种方法需要将图片放在public/photos文件夹中
-        const photoExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-        const photosList = [];
-
-        // 尝试加载10张图片（可以根据实际情况调整）
-        for (let i = 1; i <= 10; i++) {
-          for (const ext of photoExtensions) {
-            const photoPath = `/photos/photo${i}${ext}`;
-            try {
-              // 尝试加载图片
-              const response = await fetch(photoPath, {
-                method: 'HEAD'
-              });
-
-              if (response.ok) {
-                photosList.push(photoPath);
-                break;
-              }
-            } catch (error) {
-              // 图片不存在，继续尝试下一个
-              continue;
-            }
-          }
+        // 使用配置文件中的图片列表
+        if (photoList.length > 0) {
+          photos.value = photoList;
+        } else {
+          // 如果配置为空，使用默认图片
+          photos.value = [defaultPhoto];
         }
-
-        // 如果没有找到图片，使用默认图片
-        if (photosList.length === 0) {
-          // 添加默认图片
-          photosList.push('/vite.svg');
-        }
-
-        photos.value = photosList;
       } catch (error) {
         console.error("加载照片失败:", error);
         // 如果加载失败，使用默认图片
-        photos.value = ['/vite.svg'];
+        photos.value = [defaultPhoto];
       }
     };
 
@@ -134,10 +109,10 @@ export default defineComponent({
     let timeInterval: number;
     let messageInterval: number;
 
-    onMounted(async () => {
+    onMounted(() => {
       updateTime();
       fetchLoveMessage();
-      await loadPhotos();
+      loadPhotos();
       timeInterval = window.setInterval(updateTime, 1000);
       messageInterval = window.setInterval(fetchLoveMessage, 30000); // 每30秒更新一次情话
     });
