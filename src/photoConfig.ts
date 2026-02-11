@@ -14,7 +14,7 @@
 // 注意：路径必须以 /photos/ 开头
 
 export const photoList = [
-  '/photos/photo1.jpg',
+  '/photos/photo1.png',
 ];
 
 // 如果没有配置照片，使用默认图片
